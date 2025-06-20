@@ -1,175 +1,217 @@
-# Plataforma Maternidade - Next.js
+# 🌸 Plataforma de Maternidade
 
-Uma plataforma moderna para conteúdo exclusivo de maternidade com sistema de assinatura, posts em formato Instagram/Reels e painel administrativo.
+Uma plataforma moderna e completa para conteúdo sobre maternidade, desenvolvida com Next.js, TypeScript, Prisma e Stripe.
 
-## 🚀 Tecnologias
+## ✨ Características
 
-- **Next.js 15** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Estilização
-- **Prisma** - ORM para banco de dados
-- **NextAuth.js** - Autenticação
-- **Stripe** - Pagamentos e assinaturas
-- **Vercel Blob** - Upload de imagens
-- **PostgreSQL** - Banco de dados
-- **Docker Compose** - Orquestração do banco
+- **🎨 Design Moderno**: Interface elegante e responsiva
+- **🔐 Autenticação**: Sistema de login/registro com NextAuth
+- **💳 Pagamentos**: Integração com Stripe para assinaturas
+- **📝 Sistema de Posts**: Criação e gerenciamento de conteúdo
+- **👑 Painel Admin**: Área administrativa para gerenciar posts
+- **📱 Responsivo**: Funciona perfeitamente em todos os dispositivos
+- **🚀 Deploy Automático**: Pronto para deploy no Vercel
 
-## 📋 Funcionalidades
+## 🛠️ Tecnologias
 
-- ✅ Sistema de autenticação (login/registro)
-- ✅ Posts em formato Instagram/Reels (título, subtítulo, texto, imagem)
-- ✅ Painel administrativo para criar/gerenciar posts
-- ✅ Sistema de assinatura (7 dias grátis, depois R$39/mês)
-- ✅ Upload de imagens para posts
-- ✅ Conteúdo protegido para assinantes
-- ✅ Webhook Stripe para atualização automática de assinaturas
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Banco de Dados**: PostgreSQL
+- **Autenticação**: NextAuth.js
+- **Pagamentos**: Stripe
+- **Upload**: Vercel Blob Storage
+- **Deploy**: Vercel
 
-## 🛠️ Setup Rápido
+## 🚀 Como Executar
 
 ### Pré-requisitos
 
-- Node.js 18+
-- Docker Desktop
-- Conta no Stripe (para pagamentos)
-- Conta na Vercel (para upload de imagens)
+- Node.js 18+ 
+- Docker (para banco de dados local)
+- Conta no Stripe
+- Conta no Vercel (opcional)
 
-### 1. Clone e entre na pasta
+### 1. Clone o repositório
 
 ```bash
+git clone <seu-repositorio>
 cd maternidadejs
 ```
 
-### 2. Suba o banco de dados com Docker Compose
+### 2. Instale as dependências
+
+```bash
+npm install
+```
+
+### 3. Configure as variáveis de ambiente
+
+Copie o arquivo `.env.example` para `.env`:
+
+```bash
+cp env.example .env
+```
+
+Edite o arquivo `.env` com suas configurações:
+
+```env
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/maternidade"
+
+# NextAuth
+NEXTAUTH_SECRET="seu-secret-aqui"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Stripe
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# Vercel Blob (opcional)
+BLOB_READ_WRITE_TOKEN="vercel_blob_token"
+```
+
+### 4. Inicie o banco de dados
 
 ```bash
 docker-compose up -d
 ```
 
-O banco ficará disponível em `localhost:5432` com:
-- Banco: `maternidadejs`
-- Usuário: `postgres`
-- Senha: `senha`
-
-### 3. Configure as chaves de API
-
-Edite o arquivo `.env` e configure suas chaves:
-
-```env
-# Database
-DATABASE_URL="postgresql://postgres:senha@localhost:5432/maternidadejs"
-
-# NextAuth
-NEXTAUTH_SECRET="sua_secret_aqui"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Stripe (obtenha em https://dashboard.stripe.com/apikeys)
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_PUBLISHABLE_KEY="pk_test_..."
-STRIPE_WEBHOOK_SECRET="whsec_..."
-STRIPE_PRICE_ID="price_xxx" # ID do produto criado no Stripe
-
-# Vercel Blob (obtenha em https://vercel.com/dashboard)
-BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
-```
-
-### 4. Instale as dependências e rode as migrations
+### 5. Execute as migrações
 
 ```bash
-npm install
-npx prisma migrate dev --name init
+npx prisma migrate dev
+```
+
+### 6. Gere o Prisma Client
+
+```bash
 npx prisma generate
 ```
 
-### 5. Inicie o projeto
+### 7. Popule o banco com dados de exemplo
+
+```bash
+npx tsx scripts/seed-posts.ts
+```
+
+### 8. Inicie o servidor de desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-### 6. Acesse
-
-Abra [http://localhost:3000](http://localhost:3000)
-
-## 📖 Como usar
-
-### 1. Criar conta
-- Acesse `/register` e crie uma conta
-- Você receberá 7 dias de teste grátis
-
-### 2. Fazer login
-- Acesse `/login` com suas credenciais
-
-### 3. Criar posts (Admin)
-- Clique em "Admin" no header
-- Preencha título, subtítulo, texto e imagem
-- Clique em "Salvar Post"
-- Use "Publicar" para tornar o post visível
-
-### 4. Assinar (para ler posts completos)
-- Clique em "Assinar Agora" no banner
-- Complete o checkout no Stripe
-- Após 7 dias, será cobrado R$39/mês
-
-## 🔧 Configuração do Stripe
-
-1. Crie uma conta em [stripe.com](https://stripe.com)
-2. Vá em "Produtos" e crie um produto de assinatura
-3. Configure o preço: R$39/mês
-4. Copie o `price_id` para o `.env`
-5. Configure o webhook em "Desenvolvedores > Webhooks":
-   - URL: `https://seu-dominio.vercel.app/api/stripe/webhook`
-   - Eventos: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
-
-## 🚀 Deploy na Vercel
-
-1. Conecte seu repositório GitHub à Vercel
-2. Configure as variáveis de ambiente no painel da Vercel
-3. Deploy automático a cada push
+Acesse [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Estrutura do Projeto
 
 ```
-src/
-├── app/                    # App Router (Next.js 13+)
-│   ├── api/               # Rotas de API
-│   │   ├── auth/          # Autenticação
-│   │   ├── admin/         # Painel admin
-│   │   ├── stripe/        # Stripe checkout/webhook
-│   │   └── upload/        # Upload de imagens
-│   ├── login/             # Página de login
-│   ├── register/          # Página de registro
-│   ├── subscription/      # Página de assinatura
-│   ├── admin/             # Painel administrativo
-│   └── page.tsx           # Página principal
-├── components/            # Componentes React
-├── lib/                   # Configurações (Prisma, Stripe, Auth)
-└── providers/             # Providers (NextAuth)
+maternidadejs/
+├── prisma/                 # Schema do banco de dados
+├── scripts/               # Scripts de seed e setup
+├── src/
+│   ├── app/              # App Router do Next.js
+│   │   ├── admin/        # Painel administrativo
+│   │   ├── api/          # API Routes
+│   │   ├── login/        # Página de login
+│   │   ├── register/     # Página de registro
+│   │   └── subscription/ # Página de assinatura
+│   ├── components/       # Componentes React
+│   ├── lib/             # Utilitários e configurações
+│   └── providers/       # Providers do React
+├── docker-compose.yml    # Configuração do Docker
+└── README.md
 ```
 
-## 🐛 Troubleshooting
+## 🔧 Configuração do Stripe
 
-### Erro de conexão com banco
-```bash
-# Verificar se o container está rodando
-docker-compose ps
+1. Crie uma conta no [Stripe](https://stripe.com)
+2. Obtenha suas chaves de API no dashboard
+3. Configure o webhook para `/api/stripe/webhook`
+4. Adicione as chaves no arquivo `.env`
 
-# Reiniciar o container
-docker-compose restart
+## 🚀 Deploy no Vercel
+
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
+
+### Variáveis de ambiente no Vercel:
+
+```env
+DATABASE_URL="sua_url_do_postgresql"
+NEXTAUTH_SECRET="seu_secret"
+NEXTAUTH_URL="https://seu-dominio.vercel.app"
+STRIPE_SECRET_KEY="sk_live_..."
+STRIPE_PUBLISHABLE_KEY="pk_live_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+BLOB_READ_WRITE_TOKEN="vercel_blob_token"
 ```
 
-### Erro de migrations
-```bash
-# Resetar banco
-npx prisma migrate reset
+## 👥 Usuários Padrão
 
-# Rodar migrations novamente
-npx prisma migrate dev
-```
+- **Admin**: admin@maternidade.com / admin123
+- **Usuário**: Crie uma conta através do registro
 
-### Erro de upload de imagem
-- Verifique se o `BLOB_READ_WRITE_TOKEN` está configurado
-- Certifique-se de que a Vercel Blob está ativa no seu projeto
+## 📝 Funcionalidades
 
-## 📝 Licença
+### Para Visitantes
+- Visualizar posts públicos
+- Ver preview do conteúdo exclusivo
+- Registrar conta gratuita
+- Fazer login
 
-MIT License
+### Para Assinantes
+- Acesso completo a todo conteúdo
+- 7 dias grátis de teste
+- Cancelamento a qualquer momento
+
+### Para Administradores
+- Criar e editar posts
+- Publicar/despublicar conteúdo
+- Upload de imagens
+- Gerenciar usuários
+
+## 🎨 Design System
+
+- **Cores**: Rosa (#ec4899) e Roxo (#8b5cf6)
+- **Fonte**: Inter
+- **Layout**: Responsivo com Tailwind CSS
+- **Componentes**: Reutilizáveis e modulares
+
+## 🔒 Segurança
+
+- Autenticação com NextAuth.js
+- Senhas hasheadas
+- Proteção de rotas
+- Validação de dados
+- HTTPS em produção
+
+## 📈 Próximos Passos
+
+- [ ] Sistema de comentários
+- [ ] Notificações por email
+- [ ] App mobile
+- [ ] Analytics avançado
+- [ ] Sistema de tags/categorias
+- [ ] Busca avançada
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 🆘 Suporte
+
+Se você encontrar algum problema ou tiver dúvidas, abra uma issue no GitHub.
+
+---
+
+**Desenvolvido com ❤️ para mães e famílias**
