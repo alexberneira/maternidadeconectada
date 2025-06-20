@@ -1,36 +1,175 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Plataforma Maternidade - Next.js
 
-## Getting Started
+Uma plataforma moderna para conteúdo exclusivo de maternidade com sistema de assinatura, posts em formato Instagram/Reels e painel administrativo.
 
-First, run the development server:
+## 🚀 Tecnologias
+
+- **Next.js 15** - Framework React com App Router
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Prisma** - ORM para banco de dados
+- **NextAuth.js** - Autenticação
+- **Stripe** - Pagamentos e assinaturas
+- **Vercel Blob** - Upload de imagens
+- **PostgreSQL** - Banco de dados
+- **Docker Compose** - Orquestração do banco
+
+## 📋 Funcionalidades
+
+- ✅ Sistema de autenticação (login/registro)
+- ✅ Posts em formato Instagram/Reels (título, subtítulo, texto, imagem)
+- ✅ Painel administrativo para criar/gerenciar posts
+- ✅ Sistema de assinatura (7 dias grátis, depois R$39/mês)
+- ✅ Upload de imagens para posts
+- ✅ Conteúdo protegido para assinantes
+- ✅ Webhook Stripe para atualização automática de assinaturas
+
+## 🛠️ Setup Rápido
+
+### Pré-requisitos
+
+- Node.js 18+
+- Docker Desktop
+- Conta no Stripe (para pagamentos)
+- Conta na Vercel (para upload de imagens)
+
+### 1. Clone e entre na pasta
+
+```bash
+cd maternidadejs
+```
+
+### 2. Suba o banco de dados com Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+O banco ficará disponível em `localhost:5432` com:
+- Banco: `maternidadejs`
+- Usuário: `postgres`
+- Senha: `senha`
+
+### 3. Configure as chaves de API
+
+Edite o arquivo `.env` e configure suas chaves:
+
+```env
+# Database
+DATABASE_URL="postgresql://postgres:senha@localhost:5432/maternidadejs"
+
+# NextAuth
+NEXTAUTH_SECRET="sua_secret_aqui"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Stripe (obtenha em https://dashboard.stripe.com/apikeys)
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+STRIPE_PRICE_ID="price_xxx" # ID do produto criado no Stripe
+
+# Vercel Blob (obtenha em https://vercel.com/dashboard)
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
+```
+
+### 4. Instale as dependências e rode as migrations
+
+```bash
+npm install
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+### 5. Inicie o projeto
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 6. Acesse
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Abra [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📖 Como usar
 
-## Learn More
+### 1. Criar conta
+- Acesse `/register` e crie uma conta
+- Você receberá 7 dias de teste grátis
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Fazer login
+- Acesse `/login` com suas credenciais
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Criar posts (Admin)
+- Clique em "Admin" no header
+- Preencha título, subtítulo, texto e imagem
+- Clique em "Salvar Post"
+- Use "Publicar" para tornar o post visível
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Assinar (para ler posts completos)
+- Clique em "Assinar Agora" no banner
+- Complete o checkout no Stripe
+- Após 7 dias, será cobrado R$39/mês
 
-## Deploy on Vercel
+## 🔧 Configuração do Stripe
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Crie uma conta em [stripe.com](https://stripe.com)
+2. Vá em "Produtos" e crie um produto de assinatura
+3. Configure o preço: R$39/mês
+4. Copie o `price_id` para o `.env`
+5. Configure o webhook em "Desenvolvedores > Webhooks":
+   - URL: `https://seu-dominio.vercel.app/api/stripe/webhook`
+   - Eventos: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deploy na Vercel
+
+1. Conecte seu repositório GitHub à Vercel
+2. Configure as variáveis de ambiente no painel da Vercel
+3. Deploy automático a cada push
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── app/                    # App Router (Next.js 13+)
+│   ├── api/               # Rotas de API
+│   │   ├── auth/          # Autenticação
+│   │   ├── admin/         # Painel admin
+│   │   ├── stripe/        # Stripe checkout/webhook
+│   │   └── upload/        # Upload de imagens
+│   ├── login/             # Página de login
+│   ├── register/          # Página de registro
+│   ├── subscription/      # Página de assinatura
+│   ├── admin/             # Painel administrativo
+│   └── page.tsx           # Página principal
+├── components/            # Componentes React
+├── lib/                   # Configurações (Prisma, Stripe, Auth)
+└── providers/             # Providers (NextAuth)
+```
+
+## 🐛 Troubleshooting
+
+### Erro de conexão com banco
+```bash
+# Verificar se o container está rodando
+docker-compose ps
+
+# Reiniciar o container
+docker-compose restart
+```
+
+### Erro de migrations
+```bash
+# Resetar banco
+npx prisma migrate reset
+
+# Rodar migrations novamente
+npx prisma migrate dev
+```
+
+### Erro de upload de imagem
+- Verifique se o `BLOB_READ_WRITE_TOKEN` está configurado
+- Certifique-se de que a Vercel Blob está ativa no seu projeto
+
+## 📝 Licença
+
+MIT License
