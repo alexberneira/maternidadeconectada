@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_xxx' // Defina no .env
@@ -23,6 +23,7 @@ export async function POST() {
   if (subscription?.stripeCustomerId) {
     stripeCustomerId = subscription.stripeCustomerId
   } else {
+    const stripe = getStripe()
     const customer = await stripe.customers.create({
       email: user.email,
       name: user.name || undefined,
@@ -36,6 +37,7 @@ export async function POST() {
   }
 
   // Criar sessão de checkout
+  const stripe = getStripe()
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
