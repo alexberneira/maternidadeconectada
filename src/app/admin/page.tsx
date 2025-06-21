@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import AdminPostForm from '@/components/AdminPostForm'
 import AdminPostList from '@/components/AdminPostList'
 import { redirect } from 'next/navigation'
+import { Post } from '@prisma/client'
 
 interface SessionUser {
   id: string
@@ -12,16 +13,31 @@ interface SessionUser {
 }
 
 export default async function AdminPage() {
-  const session = await getServerSession(authOptions)
+  let session = null;
+  try {
+    session = await getServerSession(authOptions)
+  } catch (error) {
+    console.error('Erro ao obter sessão:', error);
+    redirect('/login')
+  }
+
   if (!session || !session.user) {
     redirect('/login')
   }
 
   // Buscar posts do usuário logado
-  const posts = await prisma.post.findMany({
-    where: { authorId: (session.user as SessionUser).id },
-    orderBy: { createdAt: 'desc' },
-  })
+  let posts: Post[] = [];
+  try {
+    if (prisma) {
+      posts = await prisma.post.findMany({
+        where: { authorId: (session.user as SessionUser).id },
+        orderBy: { createdAt: 'desc' },
+      })
+    }
+  } catch (error) {
+    console.error('Erro ao buscar posts:', error);
+    // Em caso de erro, continuar com array vazio
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">

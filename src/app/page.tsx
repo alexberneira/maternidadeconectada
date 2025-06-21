@@ -1,12 +1,21 @@
-import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 async function getPosts() {
   try {
+    // Verificar se DATABASE_URL está configurada
+    if (!process.env.DATABASE_URL) {
+      console.log('DATABASE_URL não configurada, retornando posts vazios');
+      return [];
+    }
+
+    if (!prisma) {
+      console.log('Prisma Client não inicializado, retornando posts vazios');
+      return [];
+    }
+
     const posts = await prisma.post.findMany({
       where: {
         published: true
@@ -25,13 +34,21 @@ async function getPosts() {
     return posts;
   } catch (error) {
     console.error('Erro ao buscar posts:', error);
+    // Em caso de erro, retornar array vazio para não quebrar o build
     return [];
   }
 }
 
 export default async function HomePage() {
   const posts = await getPosts();
-  const session = await getServerSession(authOptions);
+  
+  let session = null;
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error) {
+    console.error('Erro ao obter sessão:', error);
+    // Em caso de erro, continuar sem sessão
+  }
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('pt-BR', {

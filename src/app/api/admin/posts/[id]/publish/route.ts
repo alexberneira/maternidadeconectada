@@ -16,6 +16,10 @@ export async function POST(
     const { publish } = await request.json()
     const { id } = await params
 
+    if (!prisma) {
+      return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
+    }
+
     const post = await prisma.post.update({
       where: { id: parseInt(id) },
       data: { published: !!publish },

@@ -32,6 +32,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Lida com eventos relevantes
+  if (!prisma) {
+    return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
+  }
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as unknown as CheckoutSessionCompleted

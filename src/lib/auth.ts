@@ -21,8 +21,15 @@ interface SessionWithId {
   }
 }
 
+let adapter: ReturnType<typeof PrismaAdapter> | undefined = undefined;
+if (!prisma) {
+  throw new Error('Prisma Client não foi inicializado. Verifique a variável de ambiente DATABASE_URL.');
+} else {
+  adapter = PrismaAdapter(prisma);
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter,
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -31,6 +38,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        if (!prisma) {
+          return null;
+        }
         if (!credentials?.email || !credentials?.password) {
           return null
         }
