@@ -11,12 +11,13 @@ Uma plataforma moderna e completa para conteúdo sobre maternidade, desenvolvida
 - **👑 Painel Admin**: Área administrativa para gerenciar posts
 - **📱 Responsivo**: Funciona perfeitamente em todos os dispositivos
 - **🚀 Deploy Automático**: Pronto para deploy no Vercel
+- **☁️ Supabase**: Banco de dados na nuvem com backup automático
 
 ## 🛠️ Tecnologias
 
 - **Frontend**: Next.js 15, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM
-- **Banco de Dados**: PostgreSQL
+- **Banco de Dados**: PostgreSQL (Supabase)
 - **Autenticação**: NextAuth.js
 - **Pagamentos**: Stripe
 - **Upload**: Vercel Blob Storage
@@ -27,9 +28,11 @@ Uma plataforma moderna e completa para conteúdo sobre maternidade, desenvolvida
 ### Pré-requisitos
 
 - Node.js 18+ 
-- Docker (para banco de dados local)
+- Docker (para banco de dados local) ou Supabase
 - Conta no Stripe
 - Conta no Vercel (opcional)
+
+### Opção 1: Banco Local (Docker)
 
 ### 1. Clone o repositório
 
@@ -101,6 +104,32 @@ npx tsx scripts/seed-posts.ts
 npm run dev
 ```
 
+### Opção 2: Supabase (Recomendado para Produção)
+
+### 1. Configure o Supabase
+
+```bash
+# Execute o script de setup
+.\scripts\supabase-setup.ps1
+```
+
+### 2. Siga o guia completo
+
+Veja o arquivo [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) para instruções detalhadas.
+
+### 3. Aplique as migrações
+
+```bash
+# Execute o script de migração
+.\scripts\apply-supabase.ps1
+```
+
+### 4. Inicie o servidor
+
+```bash
+npm run dev
+```
+
 Acesse [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Estrutura do Projeto
@@ -147,6 +176,44 @@ STRIPE_PUBLISHABLE_KEY="pk_live_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 BLOB_READ_WRITE_TOKEN="vercel_blob_token"
 ```
+
+## ☁️ Configuração do Supabase
+
+Para usar o Supabase como banco de dados (recomendado para produção):
+
+### 1. Criar projeto no Supabase
+- Acesse [supabase.com](https://supabase.com)
+- Crie um novo projeto
+- Escolha a região mais próxima
+
+### 2. Obter credenciais
+- Vá em **Settings** → **Database**
+- Copie a **Connection string**
+- Vá em **Settings** → **API**
+- Copie as chaves de API
+
+### 3. Configurar localmente
+```bash
+# Execute o script de setup
+.\scripts\supabase-setup.ps1
+
+# Configure a DATABASE_URL no .env
+# Execute as migrações
+.\scripts\apply-supabase.ps1
+```
+
+### 4. Configurar no Vercel
+- Adicione a `DATABASE_URL` do Supabase nas variáveis de ambiente
+- Faça o deploy
+
+### Vantagens do Supabase:
+- ✅ **Gratuito** - 500MB de banco, 2GB de transferência
+- ✅ **Backup automático** - Diário
+- ✅ **Interface web** - Dashboard intuitivo
+- ✅ **Escalabilidade** - Fácil upgrade
+- ✅ **Integração** - Funciona perfeitamente com Vercel
+
+Veja o guia completo em [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
 ## 👥 Usuários Padrão
 
