@@ -23,17 +23,21 @@ export async function POST(request: NextRequest) {
       const customerId = session.customer
       const userId = session.metadata?.userId
       if (userId && subscriptionId && customerId) {
-        await prisma.subscription.update({
-          where: { userId },
-          data: {
-            status: 'active',
-            stripeSubscriptionId: subscriptionId,
-            stripeCustomerId: customerId,
-            planType: 'monthly',
-            trialEndsAt: session.trial_end ? new Date(session.trial_end * 1000) : undefined,
-            currentPeriodEnd: session.current_period_end ? new Date(session.current_period_end * 1000) : undefined,
-          },
+        // Buscar subscription existente
+        const subscription = await prisma.subscription.findFirst({
+          where: { userId }
         })
+        
+        if (subscription) {
+          await prisma.subscription.update({
+            where: { id: subscription.id },
+            data: {
+              stripeSubscriptionId: subscriptionId,
+              stripeCustomerId: customerId,
+              stripeCurrentPeriodEnd: session.current_period_end ? new Date(session.current_period_end * 1000) : undefined,
+            },
+          })
+        }
       }
       break
     }
@@ -41,14 +45,12 @@ export async function POST(request: NextRequest) {
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as any
       const stripeSubscriptionId = subscription.id
-      const status = subscription.status
       const currentPeriodEnd = subscription.current_period_end
       // Atualiza status no banco
       await prisma.subscription.updateMany({
         where: { stripeSubscriptionId },
         data: {
-          status,
-          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : undefined,
+          stripeCurrentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : undefined,
         },
       })
       break
