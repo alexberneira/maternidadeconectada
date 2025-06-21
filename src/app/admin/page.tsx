@@ -7,13 +7,13 @@ import { redirect } from 'next/navigation'
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/login')
   }
 
   // Buscar posts do usuário logado
   const posts = await prisma.post.findMany({
-    where: { authorId: session.user.id },
+    where: { authorId: (session.user as any).id },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -23,7 +23,7 @@ export default async function AdminPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Painel de Administração</h1>
         <AdminPostForm />
         <div className="mt-12">
-          <AdminPostList posts={posts} />
+          <AdminPostList posts={posts as any} />
         </div>
       </div>
     </div>
