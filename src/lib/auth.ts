@@ -24,13 +24,13 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user) {
+        if (!user || !(user as any).password) {
           return null
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          (user as any).password
         )
 
         if (!isPasswordValid) {
@@ -59,8 +59,8 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string
+      if (token && session.user) {
+        (session.user as any).id = token.id as string
       }
       return session
     }
