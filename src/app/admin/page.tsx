@@ -28,12 +28,10 @@ export default async function AdminPage() {
   // Buscar posts do usuário logado
   let posts: Post[] = [];
   try {
-    if (prisma) {
-      posts = await prisma.post.findMany({
-        where: { authorId: (session.user as SessionUser).id },
-        orderBy: { createdAt: 'desc' },
-      })
-    }
+    posts = await prisma.post.findMany({
+      where: { authorId: (session.user as SessionUser).id },
+      orderBy: { createdAt: 'desc' },
+    })
   } catch (error) {
     console.error('Erro ao buscar posts:', error);
     // Em caso de erro, continuar com array vazio

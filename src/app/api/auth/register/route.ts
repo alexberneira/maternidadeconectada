@@ -21,11 +21,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar se o prisma está disponível
-    if (!prisma) {
-      return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
-    }
-
     // Verificar se o email já existe
     const existingUser = await prisma.user.findUnique({
       where: { email }

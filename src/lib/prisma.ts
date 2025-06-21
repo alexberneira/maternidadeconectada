@@ -7,8 +7,7 @@ const globalForPrisma = globalThis as unknown as {
 // Verificar se DATABASE_URL está configurada
 const createPrismaClient = () => {
   if (!process.env.DATABASE_URL) {
-    console.warn('DATABASE_URL não configurada. Prisma Client não será inicializado.');
-    return null;
+    console.warn('DATABASE_URL não configurada. Prisma Client será inicializado mas pode falhar em operações.');
   }
   
   try {
@@ -17,12 +16,13 @@ const createPrismaClient = () => {
     });
   } catch (error) {
     console.error('Erro ao inicializar Prisma Client:', error);
-    return null;
+    // Em caso de erro, ainda retornar um cliente para evitar crashes
+    return new PrismaClient();
   }
 };
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production' && prisma) {
+if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 } 

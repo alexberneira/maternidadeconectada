@@ -10,10 +10,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
-    if (!prisma) {
-      return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
-    }
-
     const { title, subtitle, content, imageUrl } = await request.json()
     if (!title || !content) {
       return NextResponse.json({ error: 'Título e texto são obrigatórios' }, { status: 400 })

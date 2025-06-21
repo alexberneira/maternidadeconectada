@@ -21,15 +21,8 @@ interface SessionWithId {
   }
 }
 
-let adapter: ReturnType<typeof PrismaAdapter> | undefined = undefined;
-if (!prisma) {
-  throw new Error('Prisma Client não foi inicializado. Verifique a variável de ambiente DATABASE_URL.');
-} else {
-  adapter = PrismaAdapter(prisma);
-}
-
 export const authOptions: NextAuthOptions = {
-  adapter,
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -38,36 +31,38 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!prisma) {
-          return null;
-        }
         if (!credentials?.email || !credentials?.password) {
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            }
+          })
+
+          if (!user || !(user as UserWithPassword).password) {
+            return null
           }
-        })
 
-        if (!user || !(user as UserWithPassword).password) {
-          return null
-        }
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            (user as UserWithPassword).password!
+          )
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          (user as UserWithPassword).password!
-        )
+          if (!isPasswordValid) {
+            return null
+          }
 
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          }
+        } catch (error) {
+          console.error('Erro na autenticação:', error);
+          return null;
         }
       }
     })

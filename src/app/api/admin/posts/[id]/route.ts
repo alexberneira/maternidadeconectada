@@ -13,9 +13,6 @@ export async function DELETE(
   }
 
   const { id } = await params
-  if (!prisma) {
-    return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
-  }
   await prisma.post.delete({ where: { id: parseInt(id) } })
   return NextResponse.json({ message: 'Post deletado' })
 } 

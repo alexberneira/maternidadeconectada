@@ -13,9 +13,6 @@ export async function POST() {
   }
 
   // Buscar ou criar Stripe Customer
-  if (!prisma) {
-    return NextResponse.json({ error: 'Banco de dados não disponível' }, { status: 503 })
-  }
   const user = await prisma.user.findUnique({ where: { email: session.user.email } })
   if (!user || !user.email) {
     return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })

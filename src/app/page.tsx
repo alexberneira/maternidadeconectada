@@ -11,11 +11,6 @@ async function getPosts() {
       return [];
     }
 
-    if (!prisma) {
-      console.log('Prisma Client não inicializado, retornando posts vazios');
-      return [];
-    }
-
     const posts = await prisma.post.findMany({
       where: {
         published: true
