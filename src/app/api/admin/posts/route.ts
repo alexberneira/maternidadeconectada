@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const post = await prisma.post.create({
     data: {
       title,
-      subtitle,
+      excerpt: subtitle,
       content,
       imageUrl,
       authorId: user.id,
