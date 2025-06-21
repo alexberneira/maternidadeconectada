@@ -3,7 +3,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
@@ -11,9 +14,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
   try {
     const { publish } = await request.json()
+    const { id } = await params
 
     const post = await prisma.post.update({
-      where: { id: params.id },
+      where: { id: parseInt(id) },
       data: { published: !!publish },
     })
 
