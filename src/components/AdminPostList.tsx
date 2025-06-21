@@ -6,7 +6,7 @@ interface Post {
   id: string
   title: string
   subtitle?: string | null
-  isPublished: boolean
+  published: boolean
   createdAt: string
 }
 
@@ -52,14 +52,14 @@ export default function AdminPostList({ posts }: AdminPostListProps) {
             {posts.map((post) => (
               <tr key={post.id} className="border-t">
                 <td className="py-2 font-medium">{post.title}</td>
-                <td className="py-2">{post.isPublished ? 'Sim' : 'Não'}</td>
+                <td className="py-2">{post.published ? 'Sim' : 'Não'}</td>
                 <td className="py-2">{new Date(post.createdAt).toLocaleDateString('pt-BR')}</td>
                 <td className="py-2 space-x-2">
                   <button
-                    onClick={() => handlePublish(post.id, !post.isPublished)}
-                    className={`px-3 py-1 rounded-md text-sm font-medium ${post.isPublished ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}
+                    onClick={() => handlePublish(post.id, !post.published)}
+                    className={`px-3 py-1 rounded-md text-sm font-medium ${post.published ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}
                   >
-                    {post.isPublished ? 'Despublicar' : 'Publicar'}
+                    {post.published ? 'Despublicar' : 'Publicar'}
                   </button>
                   <button
                     onClick={() => handleDelete(post.id)}

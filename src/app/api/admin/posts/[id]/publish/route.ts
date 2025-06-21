@@ -9,10 +9,20 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
-  const { publish } = await request.json()
-  const post = await prisma.post.update({
-    where: { id: params.id },
-    data: { isPublished: !!publish },
-  })
-  return NextResponse.json({ post })
+  try {
+    const { publish } = await request.json()
+
+    const post = await prisma.post.update({
+      where: { id: params.id },
+      data: { published: !!publish },
+    })
+
+    return NextResponse.json(post)
+  } catch (error) {
+    console.error('Erro ao atualizar post:', error)
+    return NextResponse.json(
+      { error: 'Erro interno do servidor' },
+      { status: 500 }
+    )
+  }
 } 

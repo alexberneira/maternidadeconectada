@@ -7,7 +7,7 @@ async function getPosts() {
   try {
     const posts = await prisma.post.findMany({
       where: {
-        isPublished: true
+        published: true
       },
       include: {
         author: {
@@ -158,7 +158,7 @@ export default async function HomePage() {
               <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>Sem multas ou taxas</p>
             </div>
           </div>
-          <button style={{
+          <Link href="/subscribe" style={{
             backgroundColor: 'white',
             color: '#ec4899',
             padding: '16px 32px',
@@ -168,10 +168,12 @@ export default async function HomePage() {
             border: 'none',
             cursor: 'pointer',
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            textDecoration: 'none',
+            display: 'inline-block'
           }}>
             Começar Agora
-          </button>
+          </Link>
         </div>
       </div>
 

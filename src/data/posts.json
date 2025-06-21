@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "title": "Dicas para uma Gravidez Saudável",
+    "content": "A gravidez é um momento especial na vida de toda mulher. Para garantir uma gestação saudável, é importante manter uma alimentação equilibrada, praticar exercícios físicos moderados e fazer o acompanhamento médico regular. Consuma alimentos ricos em ácido fólico, como folhas verdes escuras, e mantenha-se hidratada. O exercício físico, como caminhadas e yoga, ajuda a manter o peso adequado e reduzir o estresse. Lembre-se de sempre consultar seu médico antes de iniciar qualquer atividade física.",
+    "excerpt": "Descubra as principais dicas para manter uma gravidez saudável e tranquila...",
+    "imageUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop",
+    "author": "Dra. Maria Silva",
+    "createdAt": "2024-01-15T10:00:00Z",
+    "category": "Gravidez"
+  },
+  {
+    "id": 2,
+    "title": "Preparando o Quarto do Bebê",
+    "content": "Preparar o quarto do bebê é uma das tarefas mais emocionantes da gravidez. Comece escolhendo um tema ou cor que você goste. O essencial inclui um berço seguro, trocador, poltrona para amamentação e armário para roupas. Opte por móveis com cantos arredondados e materiais atóxicos. As cores suaves como azul claro, rosa claro ou tons neutros criam um ambiente calmo. Não se esqueça de instalar uma boa iluminação e manter a temperatura agradável. O quarto deve ser funcional e confortável tanto para o bebê quanto para os pais.",
+    "excerpt": "Aprenda como organizar o quarto perfeito para seu bebê...",
+    "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    "author": "Ana Costa",
+    "createdAt": "2024-01-12T14:30:00Z",
+    "category": "Decoração"
+  },
+  {
+    "id": 3,
+    "title": "Amamentação: Guia Completo",
+    "content": "A amamentação é fundamental para o desenvolvimento saudável do bebê. O leite materno contém todos os nutrientes necessários e anticorpos que protegem contra doenças. Para uma amamentação bem-sucedida, é importante encontrar uma posição confortável, tanto para a mãe quanto para o bebê. O bebê deve abocanhar toda a aréola, não apenas o mamilo. Amamente sempre que o bebê demonstrar fome, sem horários rígidos. Mantenha uma alimentação saudável e beba muita água. Se tiver dificuldades, não hesite em procurar ajuda de profissionais especializados.",
+    "excerpt": "Tudo que você precisa saber sobre amamentação...",
+    "imageUrl": "https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?w=800&h=600&fit=crop",
+    "author": "Dra. Juliana Santos",
+    "createdAt": "2024-01-10T09:15:00Z",
+    "category": "Amamentação"
+  },
+  {
+    "id": 4,
+    "title": "Exercícios Pós-Parto",
+    "content": "Após o parto, é importante retomar os exercícios físicos de forma gradual e segura. Comece com exercícios leves como caminhadas e alongamentos. Os exercícios de Kegel são essenciais para fortalecer o assoalho pélvico. Após 6 semanas, com liberação médica, você pode iniciar atividades mais intensas. Yoga e pilates são excelentes opções para fortalecer o core e melhorar a postura. Lembre-se de respeitar seu corpo e não se cobrar demais. Cada mulher tem seu próprio ritmo de recuperação.",
+    "excerpt": "Descubra como se exercitar de forma segura após o parto...",
+    "imageUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+    "author": "Prof. Carla Mendes",
+    "createdAt": "2024-01-08T16:45:00Z",
+    "category": "Saúde"
+  },
+  {
+    "id": 5,
+    "title": "Desenvolvimento do Bebê: 0-6 Meses",
+    "content": "Os primeiros seis meses de vida são fundamentais para o desenvolvimento do bebê. No primeiro mês, o bebê já consegue focar objetos próximos e reconhecer a voz dos pais. Aos três meses, começa a sorrir e fazer sons. Aos seis meses, já consegue sentar com apoio e pegar objetos. É importante estimular o bebê com brincadeiras, conversas e carinhos. Cada bebê se desenvolve no seu próprio ritmo, então não se preocupe se o seu não atingir exatamente as mesmas marcas no mesmo tempo.",
+    "excerpt": "Acompanhe o desenvolvimento do seu bebê mês a mês...",
+    "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&h=600&fit=crop",
+    "author": "Dra. Fernanda Lima",
+    "createdAt": "2024-01-05T11:20:00Z",
+    "category": "Desenvolvimento"
+  }
+] 

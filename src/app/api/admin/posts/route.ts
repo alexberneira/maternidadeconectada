@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       content,
       imageUrl,
       authorId: user.id,
-      isPublished: false,
+      published: false,
     },
   })
 
