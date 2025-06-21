@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -29,6 +31,7 @@ async function getPosts() {
 
 export default async function HomePage() {
   const posts = await getPosts();
+  const session = await getServerSession(authOptions);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('pt-BR', {
@@ -80,19 +83,71 @@ export default async function HomePage() {
             </h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <Link href="/login" style={{
-              backgroundColor: '#ec4899',
-              color: 'white',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              transition: 'all 0.2s ease',
-              border: 'none',
-              cursor: 'pointer'
-            }}>
-              Entrar
-            </Link>
+            {session ? (
+              // Menu para usuário logado
+              <>
+                <span style={{
+                  color: '#6b7280',
+                  fontSize: '14px'
+                }}>
+                  Olá, {session.user?.name || session.user?.email}
+                </span>
+                <Link href="/admin" style={{
+                  backgroundColor: '#8b5cf6',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease'
+                }}>
+                  Admin
+                </Link>
+                <Link href="/api/auth/signout" style={{
+                  backgroundColor: '#ef4444',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease'
+                }}>
+                  Sair
+                </Link>
+              </>
+            ) : (
+              // Menu para usuário não logado
+              <>
+                <Link href="/login" style={{
+                  backgroundColor: '#ec4899',
+                  color: 'white',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}>
+                  Entrar
+                </Link>
+                <Link href="/register" style={{
+                  backgroundColor: 'transparent',
+                  color: '#ec4899',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease',
+                  border: '2px solid #ec4899',
+                  cursor: 'pointer'
+                }}>
+                  Cadastrar
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
