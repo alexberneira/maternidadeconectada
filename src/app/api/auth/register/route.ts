@@ -45,13 +45,10 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Criar assinatura de teste
+    // Criar assinatura básica (sem campos extras por enquanto)
     await prisma.subscription.create({
       data: {
         userId: user.id,
-        status: 'active',
-        planType: 'trial',
-        trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 dias
       },
     })
 
