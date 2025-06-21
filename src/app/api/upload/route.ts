@@ -9,6 +9,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
   }
 
+  // Verificar se a chave da API do Vercel Blob está configurada
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json({ error: 'Serviço de upload não configurado' }, { status: 500 })
+  }
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
