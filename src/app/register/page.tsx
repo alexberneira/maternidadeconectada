@@ -46,7 +46,7 @@ export default function RegisterPage() {
         const data = await response.json()
         setError(data.error || 'Erro ao criar conta')
       }
-    } catch (error) {
+    } catch {
       setError('Erro ao criar conta')
     } finally {
       setIsLoading(false)

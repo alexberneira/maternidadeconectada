@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { stripe } from '@/lib/stripe'
@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || 'price_xxx' // Defina no .env
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const session = await getServerSession(authOptions)
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })

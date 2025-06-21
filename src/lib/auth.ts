@@ -4,6 +4,23 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
+// Extend the User type to include password
+interface UserWithPassword {
+  id: string
+  email: string
+  name: string | null
+  password?: string
+}
+
+// Extend the Session type to include id
+interface SessionWithId {
+  user: {
+    id: string
+    email: string
+    name: string | null
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -24,13 +41,13 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user || !(user as any).password) {
+        if (!user || !(user as UserWithPassword).password) {
           return null
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          (user as any).password
+          (user as UserWithPassword).password!
         )
 
         if (!isPasswordValid) {
@@ -60,7 +77,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).id = token.id as string
+        (session.user as SessionWithId['user']).id = token.id as string
       }
       return session
     }

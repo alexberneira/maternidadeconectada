@@ -17,7 +17,8 @@ export default function SubscriptionPage() {
       } else {
         setError("Erro ao redirecionar para o pagamento.")
       }
-    } catch (err) {
+    } catch (_err) {
+      console.error('Erro ao carregar assinatura:', _err)
       setError("Erro ao iniciar assinatura.")
     } finally {
       setLoading(false)

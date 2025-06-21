@@ -1,14 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
+import Stripe from 'stripe'
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+
+interface CheckoutSessionCompleted {
+  subscription: string
+  customer: string
+  metadata: {
+    userId: string
+  }
+  current_period_end?: number
+}
+
+interface SubscriptionEvent {
+  id: string
+  current_period_end?: number
+}
 
 export async function POST(request: NextRequest) {
   const sig = request.headers.get('stripe-signature')
   const body = await request.text()
 
-  let event
+  let event: Stripe.Event
   try {
     event = stripe.webhooks.constructEvent(body, sig!, endpointSecret)
   } catch (err) {
@@ -18,7 +33,7 @@ export async function POST(request: NextRequest) {
   // Lida com eventos relevantes
   switch (event.type) {
     case 'checkout.session.completed': {
-      const session = event.data.object as any
+      const session = event.data.object as unknown as CheckoutSessionCompleted
       const subscriptionId = session.subscription
       const customerId = session.customer
       const userId = session.metadata?.userId
@@ -43,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
     case 'customer.subscription.updated':
     case 'customer.subscription.deleted': {
-      const subscription = event.data.object as any
+      const subscription = event.data.object as unknown as SubscriptionEvent
       const stripeSubscriptionId = subscription.id
       const currentPeriodEnd = subscription.current_period_end
       // Atualiza status no banco

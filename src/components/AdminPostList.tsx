@@ -3,11 +3,11 @@
 import { useRouter } from 'next/navigation'
 
 interface Post {
-  id: string
+  id: number
   title: string
   subtitle?: string | null
   published: boolean
-  createdAt: string
+  createdAt: Date
 }
 
 interface AdminPostListProps {
@@ -17,7 +17,7 @@ interface AdminPostListProps {
 export default function AdminPostList({ posts }: AdminPostListProps) {
   const router = useRouter()
 
-  const handlePublish = async (id: string, publish: boolean) => {
+  const handlePublish = async (id: number, publish: boolean) => {
     await fetch(`/api/admin/posts/${id}/publish`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +26,7 @@ export default function AdminPostList({ posts }: AdminPostListProps) {
     router.refresh()
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     await fetch(`/api/admin/posts/${id}`, {
       method: 'DELETE',
     })
@@ -53,7 +53,7 @@ export default function AdminPostList({ posts }: AdminPostListProps) {
               <tr key={post.id} className="border-t">
                 <td className="py-2 font-medium">{post.title}</td>
                 <td className="py-2">{post.published ? 'Sim' : 'Não'}</td>
-                <td className="py-2">{new Date(post.createdAt).toLocaleDateString('pt-BR')}</td>
+                <td className="py-2">{post.createdAt.toLocaleDateString('pt-BR')}</td>
                 <td className="py-2 space-x-2">
                   <button
                     onClick={() => handlePublish(post.id, !post.published)}

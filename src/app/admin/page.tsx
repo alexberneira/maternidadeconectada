@@ -5,6 +5,12 @@ import AdminPostForm from '@/components/AdminPostForm'
 import AdminPostList from '@/components/AdminPostList'
 import { redirect } from 'next/navigation'
 
+interface SessionUser {
+  id: string
+  email: string
+  name: string | null
+}
+
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {
@@ -13,7 +19,7 @@ export default async function AdminPage() {
 
   // Buscar posts do usuário logado
   const posts = await prisma.post.findMany({
-    where: { authorId: (session.user as any).id },
+    where: { authorId: (session.user as SessionUser).id },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -23,7 +29,7 @@ export default async function AdminPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Painel de Administração</h1>
         <AdminPostForm />
         <div className="mt-12">
-          <AdminPostList posts={posts as any} />
+          <AdminPostList posts={posts} />
         </div>
       </div>
     </div>

@@ -62,7 +62,7 @@ export default function AdminPostForm() {
         setImage(null)
         router.refresh()
       }
-    } catch (err) {
+    } catch {
       setError('Erro ao criar post')
     } finally {
       setLoading(false)

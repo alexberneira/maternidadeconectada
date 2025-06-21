@@ -159,20 +159,20 @@ export default async function HomePage() {
             </div>
           </div>
           <Link href="/subscribe" style={{
-            backgroundColor: 'white',
-            color: '#ec4899',
+            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+            color: 'white',
             padding: '16px 32px',
             borderRadius: '12px',
             fontSize: '18px',
             fontWeight: 'bold',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: '0 4px 12px rgba(236, 72, 153, 0.3)',
             transition: 'all 0.2s ease',
             textDecoration: 'none',
             display: 'inline-block'
           }}>
-            Começar Agora
+            Assinar Agora - R$ 29,90/mês
           </Link>
         </div>
       </div>
@@ -340,7 +340,7 @@ export default async function HomePage() {
           }}>
             Junte-se a milhares de mães que já descobriram nossos segredos para uma maternidade mais tranquila e feliz.
           </p>
-          <button style={{
+          <Link href="/subscribe" style={{
             background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
             color: 'white',
             padding: '16px 32px',
@@ -350,10 +350,12 @@ export default async function HomePage() {
             border: 'none',
             cursor: 'pointer',
             boxShadow: '0 4px 12px rgba(236, 72, 153, 0.3)',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            textDecoration: 'none',
+            display: 'inline-block'
           }}>
             Assinar Agora - R$ 29,90/mês
-          </button>
+          </Link>
           <p style={{
             fontSize: '14px',
             color: '#9ca3af',
