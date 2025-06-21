@@ -14,12 +14,12 @@ export async function POST(request: NextRequest) {
 
   // Buscar ou criar Stripe Customer
   const user = await prisma.user.findUnique({ where: { email: session.user.email } })
-  if (!user) {
+  if (!user || !user.email) {
     return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
   }
 
   let stripeCustomerId = null
-  const subscription = await prisma.subscription.findUnique({ where: { userId: user.id } })
+  const subscription = await prisma.subscription.findFirst({ where: { userId: user.id } })
   if (subscription?.stripeCustomerId) {
     stripeCustomerId = subscription.stripeCustomerId
   } else {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     })
     stripeCustomerId = customer.id
     await prisma.subscription.update({
-      where: { userId: user.id },
+      where: { id: subscription?.id },
       data: { stripeCustomerId },
     })
   }
