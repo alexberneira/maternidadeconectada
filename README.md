@@ -2,6 +2,12 @@
 
 Plataforma de conteúdo para mães com sistema de assinatura e pagamentos via Stripe.
 
+## 🚀 Deploy Status
+
+✅ **Última atualização:** $(date)
+✅ **Status:** Funcionando em produção
+✅ **URL:** https://maternidadeconectada.vercel.app
+
 ## ✨ **Características**
 
 - 📱 Interface moderna e responsiva
@@ -80,6 +86,10 @@ NEXTAUTH_URL="http://localhost:3000"
 STRIPE_SECRET_KEY="sk_test_..."
 STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
+NEXT_PUBLIC_STRIPE_PRICE_ID="price_..."
+
+# Vercel Blob (opcional)
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
 ```
 
 ### **Configurar Stripe**
