@@ -37,6 +37,8 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
+          console.log('🔐 Tentativa de login para:', credentials.email);
+          
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email
@@ -94,4 +96,17 @@ export const authOptions: NextAuthOptions = {
   // Configurações para produção
   debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
+  // Configurações adicionais para produção
+  useSecureCookies: process.env.NODE_ENV === 'production',
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
+  }
 } 
