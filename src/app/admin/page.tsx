@@ -6,6 +6,8 @@ import AdminPostList from '@/components/AdminPostList'
 import { redirect } from 'next/navigation'
 import { Post } from '@prisma/client'
 
+export const dynamic = 'force-dynamic'
+
 interface SessionUser {
   id: string
   email: string
