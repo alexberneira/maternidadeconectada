@@ -2,12 +2,24 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function SubscribePage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
   const handleSubscribe = async () => {
+    if (!session) {
+      router.push('/login')
+      return
+    }
+
     setIsLoading(true)
+    setError('')
+    
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -15,21 +27,48 @@ export default function SubscribePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          // Substitua pelo seu Price ID real do Stripe
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_1OqXqX2eZvKYlo2C1QqXqX2e',
+          priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID || 'price_1RbWH0B4EKN98BCovABOyfwr',
         }),
       })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao processar pagamento')
+      }
 
       const { url } = await response.json()
       if (url) {
         window.location.href = url
+      } else {
+        throw new Error('URL de checkout não recebida')
       }
     } catch (error) {
       console.error('Erro ao criar sessão de checkout:', error)
-      alert('Erro ao processar pagamento. Tente novamente.')
+      setError(error instanceof Error ? error.message : 'Erro ao processar pagamento. Tente novamente.')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Se não estiver autenticado, mostrar mensagem
+  if (status === 'loading') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif'
+      }}>
+        <div style={{
+          fontSize: '18px',
+          color: '#6b7280'
+        }}>
+          Carregando...
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -213,6 +252,21 @@ export default function SubscribePage() {
             </ul>
           </div>
 
+          {/* Mensagem de erro */}
+          {error && (
+            <div style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '12px',
+              padding: '15px',
+              marginBottom: '20px',
+              color: '#dc2626',
+              fontSize: '16px'
+            }}>
+              ❌ {error}
+            </div>
+          )}
+
           {/* Botão de Pagamento */}
           <button
             onClick={handleSubscribe}
@@ -233,7 +287,7 @@ export default function SubscribePage() {
               maxWidth: '300px'
             }}
           >
-            {isLoading ? 'Processando...' : '💳 Começar Teste Grátis'}
+            {isLoading ? 'Processando...' : session ? '💳 Começar Teste Grátis' : '🔐 Fazer Login Primeiro'}
           </button>
 
           <p style={{

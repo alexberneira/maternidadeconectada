@@ -34,5 +34,10 @@
       "source": "/(.*)",
       "destination": "/"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 } 

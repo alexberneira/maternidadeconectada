@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from 'next-auth/react'
 import Link from 'next/link'
-import { Heart, User, LogOut } from 'lucide-react'
+import { Heart, User, LogOut, CreditCard } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export default function Header() {
@@ -31,6 +31,13 @@ export default function Header() {
           <nav className="flex items-center space-x-6">
             {session ? (
               <>
+                <Link 
+                  href="/subscription" 
+                  className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 transition-colors"
+                >
+                  <CreditCard className="h-5 w-5" />
+                  <span>Minha Assinatura</span>
+                </Link>
                 <Link 
                   href="/admin" 
                   className="flex items-center space-x-2 text-gray-600 hover:text-pink-500 transition-colors"

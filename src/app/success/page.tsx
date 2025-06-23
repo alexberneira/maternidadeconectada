@@ -1,16 +1,57 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function SuccessPage() {
   const [sessionId, setSessionId] = useState<string | null>(null)
+  const [isActivating, setIsActivating] = useState(false)
+  const [activationStatus, setActivationStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const { data: session } = useSession()
+
+  const activateSubscription = useCallback(async (stripeSessionId: string) => {
+    if (isActivating) return
+
+    setIsActivating(true)
+    setActivationStatus('idle')
+
+    try {
+      const response = await fetch('/api/subscription/activate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId: stripeSessionId
+        })
+      })
+
+      if (response.ok) {
+        setActivationStatus('success')
+        console.log('Assinatura ativada com sucesso!')
+      } else {
+        setActivationStatus('error')
+        console.error('Erro ao ativar assinatura')
+      }
+    } catch (error) {
+      setActivationStatus('error')
+      console.error('Erro ao ativar assinatura:', error)
+    } finally {
+      setIsActivating(false)
+    }
+  }, [isActivating])
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const sessionIdParam = urlParams.get('session_id')
     setSessionId(sessionIdParam)
-  }, [])
+
+    // Ativar assinatura se temos session_id e usuário logado
+    if (sessionIdParam && session?.user) {
+      activateSubscription(sessionIdParam)
+    }
+  }, [session, activateSubscription])
 
   return (
     <div style={{
@@ -88,6 +129,62 @@ export default function SuccessPage() {
           }}>
             Sua assinatura foi ativada com sucesso! Agora você tem acesso completo a todo o conteúdo exclusivo sobre maternidade.
           </p>
+
+          {/* Status da Ativação */}
+          {isActivating && (
+            <div style={{
+              backgroundColor: '#fef3c7',
+              border: '1px solid #f59e0b',
+              borderRadius: '8px',
+              padding: '15px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <div style={{
+                width: '16px',
+                height: '16px',
+                border: '2px solid #f59e0b',
+                borderTop: '2px solid transparent',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+              <span style={{ color: '#92400e' }}>Ativando sua assinatura...</span>
+            </div>
+          )}
+
+          {activationStatus === 'success' && (
+            <div style={{
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #10b981',
+              borderRadius: '8px',
+              padding: '15px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <span style={{ fontSize: '20px' }}>✅</span>
+              <span style={{ color: '#065f46' }}>Assinatura ativada com sucesso!</span>
+            </div>
+          )}
+
+          {activationStatus === 'error' && (
+            <div style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #ef4444',
+              borderRadius: '8px',
+              padding: '15px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <span style={{ fontSize: '20px' }}>⚠️</span>
+              <span style={{ color: '#dc2626' }}>Erro ao ativar assinatura. Entre em contato conosco.</span>
+            </div>
+          )}
 
           {sessionId && (
             <div style={{
