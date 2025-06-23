@@ -32,12 +32,15 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log('Credenciais ausentes');
+          console.log('🔐 [AUTH] Credenciais ausentes');
           return null
         }
 
         try {
-          console.log('🔐 Tentativa de login para:', credentials.email);
+          console.log('🔐 [AUTH] Tentativa de login para:', credentials.email);
+          
+          // Test database connection first
+          await prisma.$connect()
           
           const user = await prisma.user.findUnique({
             where: {
@@ -45,8 +48,13 @@ export const authOptions: NextAuthOptions = {
             }
           })
 
-          if (!user || !(user as UserWithPassword).password) {
-            console.log('Usuário não encontrado ou sem senha');
+          if (!user) {
+            console.log('🔐 [AUTH] Usuário não encontrado:', credentials.email);
+            return null
+          }
+
+          if (!(user as UserWithPassword).password) {
+            console.log('🔐 [AUTH] Usuário sem senha:', credentials.email);
             return null
           }
 
@@ -56,19 +64,21 @@ export const authOptions: NextAuthOptions = {
           )
 
           if (!isPasswordValid) {
-            console.log('Senha inválida');
+            console.log('🔐 [AUTH] Senha inválida para:', credentials.email);
             return null
           }
 
-          console.log('Login bem-sucedido para:', user.email);
+          console.log('🔐 [AUTH] Login bem-sucedido para:', user.email);
           return {
             id: user.id,
             email: user.email,
             name: user.name,
           }
         } catch (error) {
-          console.error('Erro na autenticação:', error);
+          console.error('🔐 [AUTH] Erro na autenticação:', error);
           return null;
+        } finally {
+          await prisma.$disconnect()
         }
       }
     })
