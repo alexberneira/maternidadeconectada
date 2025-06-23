@@ -23,10 +23,28 @@ export async function GET() {
     console.log('📊 DATABASE_URL configurada:', !!process.env.DATABASE_URL);
     console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
 
-    // Verificar conexão com o banco
-    await prisma.$connect();
-    console.log('✅ Conexão com banco estabelecida');
+    // Verificar se o Prisma está funcionando
+    if (!prisma) {
+      console.error('❌ Prisma client não está disponível');
+      return NextResponse.json(
+        { error: 'Prisma client não disponível' },
+        { status: 500 }
+      );
+    }
 
+    // Teste simples de conexão
+    try {
+      await prisma.$connect();
+      console.log('✅ Conexão com banco estabelecida');
+    } catch (dbError) {
+      console.error('❌ Erro na conexão com banco:', dbError);
+      return NextResponse.json(
+        { error: 'Erro na conexão com banco de dados' },
+        { status: 500 }
+      );
+    }
+
+    // Buscar posts de forma mais simples
     const posts = await prisma.post.findMany({
       where: {
         published: true
@@ -41,24 +59,26 @@ export async function GET() {
           }
         }
       }
-    })
+    });
 
     console.log(`📝 Encontrados ${posts.length} posts`);
 
-    return NextResponse.json({
-      posts: posts.map((post: PostWithAuthor) => ({
-        id: String(post.id),
-        title: post.title,
-        content: post.content,
-        excerpt: post.excerpt || post.content.substring(0, 150) + '...',
-        imageUrl: post.imageUrl,
-        author: {
-          name: post.author?.name || 'Autor'
-        },
-        createdAt: post.createdAt.toISOString(),
-        category: post.category || 'Geral'
-      }))
-    })
+    // Mapear posts de forma mais segura
+    const mappedPosts = posts.map((post: PostWithAuthor) => ({
+      id: String(post.id),
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt || post.content.substring(0, 150) + '...',
+      imageUrl: post.imageUrl,
+      author: {
+        name: post.author?.name || 'Autor'
+      },
+      createdAt: post.createdAt.toISOString(),
+      category: post.category || 'Geral'
+    }));
+
+    return NextResponse.json({ posts: mappedPosts });
+
   } catch (error) {
     console.error('❌ Erro ao buscar posts:', error);
     
@@ -77,8 +97,12 @@ export async function GET() {
         details: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Erro desconhecido' : undefined
       },
       { status: 500 }
-    )
+    );
   } finally {
-    await prisma.$disconnect();
+    try {
+      await prisma.$disconnect();
+    } catch (disconnectError) {
+      console.error('❌ Erro ao desconectar Prisma:', disconnectError);
+    }
   }
 } 
