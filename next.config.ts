@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // Otimizações para produção
     optimizePackageImports: ['@prisma/client'],
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
   },
   
   // Configurações de build
@@ -35,6 +36,16 @@ const nextConfig: NextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   },
+
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push({
+        '@prisma/client': '@prisma/client',
+        'prisma': 'prisma'
+      })
+    }
+    return config
+  }
 };
 
 export default nextConfig;
