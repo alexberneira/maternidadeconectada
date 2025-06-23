@@ -60,8 +60,8 @@ export async function GET() {
       name: error instanceof Error ? error.name : 'Unknown',
       message: error instanceof Error ? error.message : 'Erro desconhecido',
       stack: error instanceof Error ? error.stack : undefined,
-      code: (error as any)?.code,
-      meta: (error as any)?.meta
+      code: error && typeof error === 'object' && 'code' in error ? String(error.code) : undefined,
+      meta: error && typeof error === 'object' && 'meta' in error ? error.meta : undefined
     };
     
     return NextResponse.json({
