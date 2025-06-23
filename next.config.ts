@@ -5,8 +5,10 @@ const nextConfig: NextConfig = {
   experimental: {
     // Otimizações para produção
     optimizePackageImports: ['@prisma/client'],
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma']
   },
+  
+  // Configuração para otimizar o Prisma
+  transpilePackages: ['@prisma/client'],
   
   // Configurações de build
   typescript: {
