@@ -32,6 +32,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('Credenciais ausentes');
           return null
         }
 
@@ -43,6 +44,7 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!user || !(user as UserWithPassword).password) {
+            console.log('Usuário não encontrado ou sem senha');
             return null
           }
 
@@ -52,9 +54,11 @@ export const authOptions: NextAuthOptions = {
           )
 
           if (!isPasswordValid) {
+            console.log('Senha inválida');
             return null
           }
 
+          console.log('Login bem-sucedido para:', user.email);
           return {
             id: user.id,
             email: user.email,
@@ -86,5 +90,8 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     }
-  }
+  },
+  // Configurações para produção
+  debug: process.env.NODE_ENV === 'development',
+  secret: process.env.NEXTAUTH_SECRET,
 } 
