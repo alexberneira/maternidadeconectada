@@ -12,7 +12,10 @@ export async function GET() {
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT_SET',
       NEXTAUTH_URL: process.env.NEXTAUTH_URL,
       VERCEL_URL: process.env.VERCEL_URL,
-      VERCEL_ENV: process.env.VERCEL_ENV
+      VERCEL_ENV: process.env.VERCEL_ENV,
+      // Mostrar parte da URL para debug (sem senha)
+      DATABASE_URL_PARTIAL: process.env.DATABASE_URL ? 
+        process.env.DATABASE_URL.replace(/:[^:@]*@/, ':****@') : 'NOT_SET'
     };
     
     console.log('📋 Variáveis de ambiente:', envCheck);
@@ -23,7 +26,8 @@ export async function GET() {
         status: 'error',
         message: 'DATABASE_URL não configurada',
         env: envCheck,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        buildId: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown'
       }, { status: 500 });
     }
     
@@ -47,7 +51,8 @@ export async function GET() {
         ...envCheck,
         hasPrismaAdapter: true,
         userCount,
-        connectionTest: 'SUCCESS'
+        connectionTest: 'SUCCESS',
+        buildId: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown'
       },
       timestamp: new Date().toISOString()
     });
@@ -74,9 +79,12 @@ export async function GET() {
         NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? 'SET' : 'NOT_SET',
         NEXTAUTH_URL: process.env.NEXTAUTH_URL,
         VERCEL_URL: process.env.VERCEL_URL,
-        VERCEL_ENV: process.env.VERCEL_ENV
+        VERCEL_ENV: process.env.VERCEL_ENV,
+        DATABASE_URL_PARTIAL: process.env.DATABASE_URL ? 
+          process.env.DATABASE_URL.replace(/:[^:@]*@/, ':****@') : 'NOT_SET'
       },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      buildId: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown'
     }, { status: 500 });
   } finally {
     try {
