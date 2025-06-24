@@ -21,43 +21,49 @@ export async function GET() {
     
     const supabase = createClient(supabaseUrl, supabaseKey)
     
-    // Testar conexão básica sem acessar tabelas específicas
+    // Testar conexão básica sem acessar tabelas
     const { data, error } = await supabase
-      .from('_prisma_migrations')
-      .select('*')
-      .limit(1)
+      .rpc('version')
     
     if (error) {
       console.error('❌ Erro Supabase:', error)
       
-      // Se der erro de schema, vamos tentar uma query mais simples
-      if (error.message.includes('pg_pgrst_no_exposed_schemas')) {
+      // Se der erro de RPC, vamos tentar uma query SQL direta
+      const { data: sqlData, error: sqlError } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+        .limit(1)
+      
+      if (sqlError) {
+        console.error('❌ Erro SQL:', sqlError)
+        
         return NextResponse.json({
-          status: 'partial_success',
-          message: 'Conexão estabelecida, mas problemas de schema/permissões',
-          error: error.message,
-          recommendation: 'Verificar configurações de RLS e permissões no Supabase',
+          status: 'error',
+          message: 'Problemas de conectividade com Supabase',
+          error: sqlError.message,
+          recommendation: 'Verificar configurações do projeto Supabase',
           env: {
             SUPABASE_URL: supabaseUrl,
             SUPABASE_KEY: supabaseKey ? 'SET' : 'NOT_SET'
           },
           nextSteps: [
-            'Verificar se tabelas existem no Supabase',
-            'Configurar políticas RLS',
-            'Verificar permissões da chave anônima'
+            'Verificar se o projeto Supabase está ativo',
+            'Verificar configurações de API',
+            'Verificar se as tabelas foram criadas corretamente'
           ]
-        }, { status: 200 })
+        }, { status: 500 })
       }
       
       return NextResponse.json({
-        status: 'error',
-        message: 'Erro ao conectar com Supabase',
-        error: error.message,
+        status: 'partial_success',
+        message: 'Conexão estabelecida, mas problemas de acesso',
+        data: sqlData,
         env: {
           SUPABASE_URL: supabaseUrl,
           SUPABASE_KEY: supabaseKey ? 'SET' : 'NOT_SET'
         }
-      }, { status: 500 })
+      }, { status: 200 })
     }
     
     console.log('✅ Conexão Supabase estabelecida!')
@@ -66,7 +72,7 @@ export async function GET() {
       status: 'ok',
       message: 'Conexão Supabase funcionando perfeitamente',
       data: {
-        migrations: data,
+        version: data,
         supabaseUrl: supabaseUrl,
         connectionTest: 'SUCCESS'
       },
