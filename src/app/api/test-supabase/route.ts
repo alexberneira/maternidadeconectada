@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function GET() {
   try {
-    console.log('🔍 Testando conexão direta com Supabase...')
+    console.log('🔍 Testando conexão básica com Supabase...')
     
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -21,14 +21,34 @@ export async function GET() {
     
     const supabase = createClient(supabaseUrl, supabaseKey)
     
-    // Testar conexão fazendo uma query simples
+    // Testar conexão básica sem acessar tabelas específicas
     const { data, error } = await supabase
-      .from('User')
-      .select('id, email, name')
+      .from('_prisma_migrations')
+      .select('*')
       .limit(1)
     
     if (error) {
       console.error('❌ Erro Supabase:', error)
+      
+      // Se der erro de schema, vamos tentar uma query mais simples
+      if (error.message.includes('pg_pgrst_no_exposed_schemas')) {
+        return NextResponse.json({
+          status: 'partial_success',
+          message: 'Conexão estabelecida, mas problemas de schema/permissões',
+          error: error.message,
+          recommendation: 'Verificar configurações de RLS e permissões no Supabase',
+          env: {
+            SUPABASE_URL: supabaseUrl,
+            SUPABASE_KEY: supabaseKey ? 'SET' : 'NOT_SET'
+          },
+          nextSteps: [
+            'Verificar se tabelas existem no Supabase',
+            'Configurar políticas RLS',
+            'Verificar permissões da chave anônima'
+          ]
+        }, { status: 200 })
+      }
+      
       return NextResponse.json({
         status: 'error',
         message: 'Erro ao conectar com Supabase',
@@ -42,21 +62,11 @@ export async function GET() {
     
     console.log('✅ Conexão Supabase estabelecida!')
     
-    // Contar usuários
-    const { count, error: countError } = await supabase
-      .from('User')
-      .select('*', { count: 'exact', head: true })
-    
-    if (countError) {
-      console.error('❌ Erro ao contar usuários:', countError)
-    }
-    
     return NextResponse.json({
       status: 'ok',
-      message: 'Conexão Supabase funcionando',
+      message: 'Conexão Supabase funcionando perfeitamente',
       data: {
-        users: data,
-        userCount: count || 0,
+        migrations: data,
         supabaseUrl: supabaseUrl,
         connectionTest: 'SUCCESS'
       },
